@@ -73,4 +73,12 @@ publishActionNs.on("connection", (socket) => {
       }
     }
   })
+
+  socket.on('disconnecting', () => {
+    console.log(`disconnecting:socketId:${socket.id}`)
+    let inRooms = Object.keys(socket.rooms)
+    inRooms.forEach((room) => {
+      socket.to(room).emit("message", { type: "USER_" })
+    })
+  })
 })
