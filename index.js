@@ -17,6 +17,7 @@ publishActionNs.on("connection", (socket) => {
   console.log(`Socket ${socket.id} connected`)
   socket.on('register', (data, callback) => {
     console.log(`register:socketId:${socket.id} - data: ${data.toString()}`)
+    console.log(`data: ${data}`)
     const {deviceId, deviceName} = data
     console.log("deviceId from data: " + deviceId)
     console.log("deviceName from data: " + deviceName)
