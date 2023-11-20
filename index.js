@@ -46,6 +46,7 @@ publishActionNs.on("connection", (socket) => {
     const {deviceId, roomName} = data
     if(!devices[socket.id]) {
       callback({success: false, errorMsg: "Invalid credentials error!! Fail to create new Room"})
+      return
     }
     
     if(rooms[roomName]) {
