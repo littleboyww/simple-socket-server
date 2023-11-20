@@ -148,7 +148,7 @@ publishActionNs.on("connection", (socket) => {
   }
 
   const handleDisconnect = (id) => {
-    const joinedRoom = publishActionNs.adapter.sids[id]
+    const joinedRoom = publishActionNs.adapter.sids.get(id)
     console.log(`handleDisconnect:socketId:${socket.id}:joinedRoom:${joinedRoom}`)
     if(joinedRoom) {
       for(let room in joinedRoom) {
