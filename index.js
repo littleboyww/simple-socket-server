@@ -60,24 +60,19 @@ publishActionNs.on("connection", (socket) => {
 
   socket.on("joinRoom", (data, callback) => {
     console.log(`joinRoom:socketId:${socket.id} - data: ${data.toString()}`)
-    const {deviceId, roomName} = data
+    const {roomName} = data
 
     if(!devices[socket.id]) {
-      console.log(`joinRoom:socketId:${socket.id}:callback - Invalid credentials error!! Fail to create new Room`)
+      console.log(`joinRoom:socketId:${socket.id}:callback - Invalid credentials error!! Fail to join room`)
       callback({success: false, errorMsg: "Invalid credentials error!! Fail to create new Room"})
-    } else {
-      if(!getDeviceByDeviceId(deviceId)) {
-        console.log(`joinRoom:socketId:${socket.id}:callback - Invalid credentials error!! Fail to create new Room`)
-        callback({success: false, errorMsg: "Invalid credentials error!! Fail to create new Room"})
-        return
-      }
-    }
+      return
+    } 
     if(!rooms[roomName]) {
       console.log(`joinRoom:socketId:${socket.id}:callback - Not found room!!`)
       callback({success: false, errorMsg: "Not found room!!"})
       return
     }
-    publishActionNs.to(socket.id).socketsJoin(roomName)
+    publishActionNs.to(socket.id).socketsJoin(`/rooms/${roomName}`)
     rooms[roomName].emit(`message`, { type: "USER_JOINED_EVENT", deviceId: devices[socket.id].deviceId, deviceName: devices[socket.id].deviceName })
     console.log(`joinRoom:socketId:${socket.id}:callback - success`)
     callback({success: true})
