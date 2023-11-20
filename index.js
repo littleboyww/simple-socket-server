@@ -16,6 +16,7 @@ const publishActionNs = io.of("/")
 publishActionNs.on("connection", (socket) => {
   console.log(`Socket ${socket.id} connected`)
   socket.on('register', (data, callback) => {
+    data = JSON.parse(data)
     console.log(`register:socketId:${socket.id} - data: ${data.toString()}`)
     console.log(`data: ${data}`)
     const {deviceId, deviceName} = data
@@ -37,6 +38,7 @@ publishActionNs.on("connection", (socket) => {
   })
 
   socket.on('createRoom', (data, callback) => {
+    data = JSON.parse(data)
     console.log(`createRoom:socketId:${socket.id} - data: ${data.toString()}`)
     const {deviceId, roomName} = data
     if(!devices[socket.id]) {
