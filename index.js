@@ -47,6 +47,7 @@ publishActionNs.on("connection", (socket) => {
     rooms[roomName] = publishActionNs.to(`/rooms/${roomName}`)
     console.log(`createRoom:savedRoom:${rooms}`)
     callback({success: true})
+    rooms[roomName].emit(`message`, { type: "USER_JOINED_EVENT", deviceId: devices[socket.id].deviceId, deviceName: devices[socket.id].deviceName })
   })
 
   socket.on("joinRoom", (data, callback) => {
@@ -85,6 +86,7 @@ publishActionNs.on("connection", (socket) => {
       console.log("disconnect:existedDevice:" + socket.id)
       const deviceId = devices[socket.id].deviceId
       const inRooms = Object.keys(socket.rooms)
+      console.log(inRooms)
       inRooms.forEach((room) => {
         console.log("disconnect:room:" + room)
         handleLeaveRoom(deviceId, room)
