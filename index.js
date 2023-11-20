@@ -129,8 +129,11 @@ publishActionNs.on("connection", (socket) => {
     if(rooms[roomName]) {
       socket.leave(`/rooms/${roomName}`)
       const clientsInRoom = publishActionNs.adapter.rooms[`/rooms/${roomName}`]
+      console.log(`leaveWithRoomName:clientsInRoom:${clientsInRoom}`)
       if(clientsInRoom && clientsInRoom.length == 0) {
+        console.log(`leaveWithRoomName:clientsInRoom:length 0`)
         delete rooms[roomName]
+        console.log(rooms)
       } else {
         publishActionNs.to(`/rooms/${roomName}`).emit('message', {type: "USER_LEAVED_EVENT", deviceId: devices[socket.id].deviceId, deviceName: devices[socket.id].deviceName})
       }
