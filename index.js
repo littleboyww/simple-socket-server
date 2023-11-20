@@ -100,9 +100,9 @@ publishActionNs.on("connection", (socket) => {
   })
 
   socket.on("leaveRoom", (data) => {
-    const { deviceId, roomName } = data
+    const { roomName } = data
     console.log(`leaveRoom:socketId:${socket.id}`)
-    handleLeaveRoom(deviceId, roomName)
+    handleLeaveRoom(roomName)
   
   })
 
@@ -117,26 +117,25 @@ publishActionNs.on("connection", (socket) => {
   socket.on('disconnecting', () => {
     if(devices[socket.id]) {
       console.log("disconnecting:existedDevice:" + socket.id)
-      const deviceId = devices[socket.id].deviceId
       const inRooms = Object.keys(socket.rooms)
       console.log(inRooms)
       inRooms.forEach((room) => {
         console.log('disconnecting:room:' + room)
-        handleLeaveRoom(deviceId, room)
+        handleLeaveRoom(room)
       })
     }
     console.log("disconnecting:socketId:" + socket.id)
   })
 
 
-  const handleLeaveRoom = (deviceId, roomName) => {
+  const handleLeaveRoom = (roomName) => {
     if(rooms[roomName]) {
       socket.leave((roomName))
       const roomClients = rooms[roomName].clients
       if(roomClients.length === 0) {
         delete rooms[roomName]
       } else {
-        socket.to(roomName).emit('message', {type: "USER_LEAVED_EVENT", deviceId: deviceId, deviceName: devices[deviceId].deviceName})
+        socket.to(roomName).emit('message', {type: "USER_LEAVED_EVENT", deviceId: devices[socket.id].deviceId, deviceName: devices[socket.id].deviceName})
       }
     }
   }
