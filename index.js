@@ -136,7 +136,7 @@ publishActionNs.on("connection", (socket) => {
     if(rooms[roomName]) {
       socket.leave(`/rooms/${roomName}`)
       console.log(publishActionNs.adapter.rooms)
-      const clientsInRoom = publishActionNs.adapter.rooms[`/rooms/${roomName}`]
+      const clientsInRoom = publishActionNs.adapter.rooms.get(`/rooms/${roomName}`)
       console.log(`leaveWithRoomName:clientsInRoom:${clientsInRoom}`)
       if(!clientsInRoom) {
         delete rooms[roomName]
@@ -153,7 +153,7 @@ publishActionNs.on("connection", (socket) => {
     if(joinedRoom) {
       for(let room in joinedRoom) {
         socket.leave(room)
-        const clientsInRoom = publishActionNs.adapter.rooms[room]
+        const clientsInRoom = publishActionNs.adapter.rooms.get(room)
         if(clientsInRoom) {
           publishActionNs.to(room).emit('message', {type: "USER_LEAVED_EVENT", deviceId: devices[socket.id].deviceId, deviceName: devices[socket.id].deviceName})
         }
