@@ -128,8 +128,9 @@ publishActionNs.on("connection", (socket) => {
   const leaveWithRoomName = (roomName) => {
     if(rooms[roomName]) {
       socket.leave(roomName)
-      // const clientsInRoom = publishActionNs.adapter.rooms[rooms[roomName]]
-      console.log(publishActionNs.adapter.rooms)
+      const clientsInRoom = publishActionNs.adapter.rooms[roomName]
+      console.log(clientsInRoom)
+      console.log(clientsInRoom.length)
       // console.log(`leavewithRoomName:socketId:${socket.id}:clientsInRoom:${clientsInRoom}`)
       // if(clientsInRoom.length == 0) {
       //   delete rooms[roomName]
