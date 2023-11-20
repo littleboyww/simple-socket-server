@@ -152,7 +152,7 @@ publishActionNs.on("connection", (socket) => {
     console.log(`handleDisconnect:socketId:${socket.id}:joinedRoom:${joinedRoom}`)
     if(joinedRoom) {
       console.log(joinedRoom)
-      for(const _room in joinedRoom) {
+      for(const _room of joinedRoom) {
         console.log(_room)
         if(_room !== socket.id) {
           socket.leave(_room)
