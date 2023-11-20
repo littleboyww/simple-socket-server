@@ -18,6 +18,8 @@ publishActionNs.on("connection", (socket) => {
   socket.on('register', (data, callback) => {
     console.log(`register:socketId:${socket.id} - data: ${data.toString()}`)
     const {deviceId, deviceName} = data
+    console.log("deviceId from data: " + deviceId)
+    console.log("deviceName from data: " + deviceName)
     const saved = {
       socketId: socket.id,
       deviceId: deviceId,
