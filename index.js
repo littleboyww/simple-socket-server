@@ -2,6 +2,7 @@ import express from "express"
 import { Server } from "socket.io"
 import { createServer } from "http"
 import { v4 as uuidv4} from 'uuid'
+import { publicDecrypt } from "crypto"
 
 const app = express()
 
@@ -102,8 +103,8 @@ publishActionNs.on("connection", (socket) => {
   socket.on("leaveRoom", (data) => {
     const { roomName } = data
     console.log(`leaveRoom:socketId:${socket.id}`)
-    handleLeaveRoom(roomName)
-  
+    leaveWithRoomName(roomName)
+
   })
 
   socket.on('disconnect', () => {
@@ -117,17 +118,44 @@ publishActionNs.on("connection", (socket) => {
   socket.on('disconnecting', () => {
     if(devices[socket.id]) {
       console.log("disconnecting:existedDevice:" + socket.id)
-      const inRooms = Object.keys(socket.rooms)
-      console.log(socket.rooms)
-      console.log(inRooms)
-      inRooms.forEach((room) => {
-        console.log('disconnecting:room:' + room)
-        handleLeaveRoom(room)
-      })
+      handleDisconnect(socket.id)
+     
     }
     console.log("disconnecting:socketId:" + socket.id)
   })
 
+  const leaveWithRoomName = (roomName) => {
+    if(rooms[roomName]) {
+      socket.leave(roomName)
+      const clientsInRoom = publishActionNs.adapter.rooms[rooms[roomName]]
+      
+      console.log(`leavewithRoomName:socketId:${socket.id}:clientsInRoom:${clientsInRoom}`)
+      if(clientsInRoom.length == 0) {
+        delete rooms[roomName]
+      } else {
+        socket.to(roomName).emit('message', {type: "USER_LEAVED_EVENT", deviceId: devices[socket.id].deviceId, deviceName: devices[socket.id].deviceName})
+      }
+    }
+  }
+
+  const handleDisconnect = (id) => {
+    const joinedRoom = publishActionNs.adapter.sids[id]
+    console.log(`handleDisconnect:socketId:${socket.id}:joinedRoom:${joinedRoom}`)
+    for(let room in joinedRoom) {
+      socket.leave(room)
+      const clientsInRoom = publishActionNs.adapter.rooms[room]
+      console.log(`handleDisconnect:socketId:${socket.id}:room:${room}:clientsInRoom:${clientsInRoom.length}`)
+      if(clientsInRoom.length == 0) {
+        const roomToDelete = Object.keys(rooms).find(key => rooms[key] === room);
+        if (roomToDelete) {
+            delete rooms[roomToDelete];
+        }
+        
+      } else {
+        publishActionNs.to(room).emit('message', {type: "USER_LEAVED_EVENT", deviceId: devices[socket.id].deviceId, deviceName: devices[socket.id].deviceName})
+      }
+    }
+  }
 
   const handleLeaveRoom = (roomName) => {
     if(rooms[roomName]) {
