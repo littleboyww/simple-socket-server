@@ -38,7 +38,9 @@ publishActionNs.on("connection", (socket) => {
   })
 
   socket.on('createRoom', (data, callback) => {
-    data = JSON.parse(data)
+    if(typeof data == "string") {
+      data = JSON.parse(data)
+    } 
     console.log(`createRoom:socketId:${socket.id} - data: ${data.toString()}`)
     const {deviceId, roomName} = data
     if(!devices[socket.id]) {
