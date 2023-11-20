@@ -101,6 +101,7 @@ publishActionNs.on("connection", (socket) => {
 
   socket.on("leaveRoom", (data) => {
     const { deviceId, roomName } = data
+    console.log(`leaveRoom:socketId:${socket.id}`)
     handleLeaveRoom(deviceId, roomName)
   
   })
@@ -108,17 +109,23 @@ publishActionNs.on("connection", (socket) => {
   socket.on('disconnect', () => {
     if(devices[socket.id]) {
       console.log("disconnect:existedDevice:" + socket.id)
-      const deviceId = devices[socket.id].deviceId
-      const inRooms = Object.keys(socket.rooms)
-      console.log(socket.rooms)
-      console.log(inRooms)
-      inRooms.forEach((room) => {
-        console.log("disconnect:room:" + room)
-        handleLeaveRoom(deviceId, room)
-      })
       delete devices[socket.id]
     }    
     console.log("disconnect:socketId:" + socket.id)
+  })
+
+  socket.on('disconnecting', () => {
+    if(devices[socket.id]) {
+      console.log("disconnecting:existedDevice:" + socket.id)
+      const deviceId = devices[socket.id].deviceId
+      const inRooms = Object.keys(socket.rooms)
+      console.log(inRooms)
+      inRooms.forEach((room) => {
+        console.log('disconnecting:room:' + room)
+        handleLeaveRoom(deviceId, room)
+      })
+    }
+    console.log("disconnecting:socketId:" + socket.id)
   })
 
 
