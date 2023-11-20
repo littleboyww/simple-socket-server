@@ -152,12 +152,14 @@ publishActionNs.on("connection", (socket) => {
     console.log(`handleDisconnect:socketId:${socket.id}:joinedRoom:${joinedRoom}`)
     if(joinedRoom) {
       console.log(joinedRoom)
-      for(let room in joinedRoom) {
-        console.log(room)
-        socket.leave(room)
-        const clientsInRoom = publishActionNs.adapter.rooms.get(room)
-        if(clientsInRoom) {
-          publishActionNs.to(room).emit('message', {type: "USER_LEAVED_EVENT", deviceId: devices[socket.id].deviceId, deviceName: devices[socket.id].deviceName})
+      for(const _room in joinedRoom) {
+        console.log(_room)
+        if(_room !== socket.id) {
+          socket.leave(_room)
+          const clientsInRoom = publishActionNs.adapter.rooms.get(_room)
+          if(clientsInRoom) {
+            publishActionNs.to(_room).emit('message', {type: "USER_LEAVED_EVENT", deviceId: devices[socket.id].deviceId, deviceName: devices[socket.id].deviceName})
+          }  
         }
       }    
     }
