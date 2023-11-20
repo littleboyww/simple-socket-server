@@ -86,6 +86,7 @@ publishActionNs.on("connection", (socket) => {
       console.log("disconnect:existedDevice:" + socket.id)
       const deviceId = devices[socket.id].deviceId
       const inRooms = Object.keys(socket.rooms)
+      console.log(socket.rooms)
       console.log(inRooms)
       inRooms.forEach((room) => {
         console.log("disconnect:room:" + room)
