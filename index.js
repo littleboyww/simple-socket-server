@@ -127,35 +127,36 @@ publishActionNs.on("connection", (socket) => {
 
   const leaveWithRoomName = (roomName) => {
     if(rooms[roomName]) {
-      socket.leave(roomName)
-      const clientsInRoom = publishActionNs.adapter.rooms[roomName]
-      console.log(clientsInRoom)
-      console.log(clientsInRoom.length)
-      // console.log(`leavewithRoomName:socketId:${socket.id}:clientsInRoom:${clientsInRoom}`)
-      // if(clientsInRoom.length == 0) {
-      //   delete rooms[roomName]
-      // } else {
-      //   socket.to(roomName).emit('message', {type: "USER_LEAVED_EVENT", deviceId: devices[socket.id].deviceId, deviceName: devices[socket.id].deviceName})
-      // }
+      socket.leave(`/rooms/${roomName}`)
+      const clientsInRoom = publishActionNs.adapter.rooms[`/rooms/${roomName}`]
+      if(clientsInRoom && clientsInRoom.length == 0) {
+        delete rooms[roomName]
+      } else {
+        publishActionNs.to(`/rooms/${roomName}`).emit('message', {type: "USER_LEAVED_EVENT", deviceId: devices[socket.id].deviceId, deviceName: devices[socket.id].deviceName})
+      }
     }
   }
 
   const handleDisconnect = (id) => {
     const joinedRoom = publishActionNs.adapter.sids[id]
     console.log(`handleDisconnect:socketId:${socket.id}:joinedRoom:${joinedRoom}`)
-    for(let room in joinedRoom) {
-      socket.leave(room)
-      const clientsInRoom = publishActionNs.adapter.rooms[room]
-      console.log(`handleDisconnect:socketId:${socket.id}:room:${room}:clientsInRoom:${clientsInRoom.length}`)
-      if(clientsInRoom.length == 0) {
-        const roomToDelete = Object.keys(rooms).find(key => rooms[key] === room);
-        if (roomToDelete) {
-            delete rooms[roomToDelete];
+    if(joinedRoom) {
+      for(let room in joinedRoom) {
+        socket.leave(room)
+        const clientsInRoom = publishActionNs.adapter.rooms[room]
+        if(clientsInRoom && clientsInRoom.length === 0 ) {
+          console.log(`handleDisconnect:socketId:${socket.id}:room:${room}:clientsInRoom:${clientsInRoom.length}`)
         }
-        
-      } else {
-        publishActionNs.to(room).emit('message', {type: "USER_LEAVED_EVENT", deviceId: devices[socket.id].deviceId, deviceName: devices[socket.id].deviceName})
-      }
+        if(clientsInRoom.length === 0) {
+          const roomToDelete = room.replace('/rooms/', '');
+          if (roomToDelete) {
+              delete rooms[roomToDelete];
+          }
+          
+        } else {
+          publishActionNs.to(room).emit('message', {type: "USER_LEAVED_EVENT", deviceId: devices[socket.id].deviceId, deviceName: devices[socket.id].deviceName})
+        }
+      }    
     }
   }
 
