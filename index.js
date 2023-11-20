@@ -14,6 +14,13 @@ let devices = {}
 let rooms = {}
 
 const publishActionNs = io.of("/")
+publishActionNs.adapter.on("delete-room", (room) => {
+  console.log(`room ${room} was deleted`)
+  room = room.replace('/rooms/', '')
+  if(rooms[room]) {
+    delete rooms[room]
+  }
+})
 publishActionNs.on("connection", (socket) => {
   console.log(`Socket ${socket.id} connected`)
   socket.on('register', (data, callback) => {
@@ -131,8 +138,7 @@ publishActionNs.on("connection", (socket) => {
       console.log(publishActionNs.adapter.rooms)
       const clientsInRoom = publishActionNs.adapter.rooms[`/rooms/${roomName}`]
       console.log(`leaveWithRoomName:clientsInRoom:${clientsInRoom}`)
-      if(clientsInRoom && clientsInRoom.length == 0) {
-        console.log(`leaveWithRoomName:clientsInRoom:length 0`)
+      if(!clientsInRoom) {
         delete rooms[roomName]
         console.log(rooms)
       } else {
@@ -148,33 +154,13 @@ publishActionNs.on("connection", (socket) => {
       for(let room in joinedRoom) {
         socket.leave(room)
         const clientsInRoom = publishActionNs.adapter.rooms[room]
-        if(clientsInRoom && clientsInRoom.length === 0 ) {
-          console.log(`handleDisconnect:socketId:${socket.id}:room:${room}:clientsInRoom:${clientsInRoom.length}`)
-        }
-        if(clientsInRoom.length === 0) {
-          const roomToDelete = room.replace('/rooms/', '');
-          if (roomToDelete) {
-              delete rooms[roomToDelete];
-          }
-          
-        } else {
+        if(clientsInRoom) {
           publishActionNs.to(room).emit('message', {type: "USER_LEAVED_EVENT", deviceId: devices[socket.id].deviceId, deviceName: devices[socket.id].deviceName})
         }
       }    
     }
   }
 
-  const handleLeaveRoom = (roomName) => {
-    if(rooms[roomName]) {
-      socket.leave((roomName))
-      const roomClients = rooms[roomName].clients
-      if(roomClients.length === 0) {
-        delete rooms[roomName]
-      } else {
-        socket.to(roomName).emit('message', {type: "USER_LEAVED_EVENT", deviceId: devices[socket.id].deviceId, deviceName: devices[socket.id].deviceName})
-      }
-    }
-  }
 })
 
 const getDeviceByDeviceId = (deviceId) => {
