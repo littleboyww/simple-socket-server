@@ -94,6 +94,7 @@ publishActionNs.on("connection", (socket) => {
       callback({success: false, errorMsg: "Failed to send message!! This room wasn't exist"})
       return
     }
+    console.log("message:room:socketId:" + socket.id + `:${socket.rooms}`)
     socket.to(`/rooms/${roomName}`).emit('message', {type: "MESSAGE", deviceId: devices[socket.id].deviceId, deviceName: devices[socket.id].deviceName, message: message})
     callback({success: true})
   })
