@@ -77,6 +77,26 @@ publishActionNs.on("connection", (socket) => {
     console.log(`joinRoom:socketId:${socket.id}:callback - success`)
     callback({success: true})
   })
+  
+  socket.on('message', (data, callback) => {
+    if(typeof data == 'string') {
+      data = JSON.parse(data)
+    }
+   console.log(`message:socketId:${socket.id} - data: ${data}`)
+   const {message, roomName} = data
+    if(!devices[socket.id]) {
+      console.log(`message:socketId:${socket.id}:callback - Invalid credentials error!! Fail to send message`)
+      callback({success: false, errorMsg: "Invalid credentials error!! Fail to send message"})
+      return
+    }
+    if(!rooms[roomName]) {
+      console.log(`message:socketId:${socket.id}:callback - Not found room!!`)
+      callback({success: false, errorMsg: "Failed to send message!! This room wasn't exist"})
+      return
+    }
+    socket.to(`/rooms/${roomName}`).emit('message', {type: "MESSAGE", deviceId: devices[socket.id].deviceId, deviceName: devices[socket.id].deviceName, message: message})
+    callback({success: true})
+  })
 
   socket.on("leaveRoom", (data) => {
     const { deviceId, roomName } = data
