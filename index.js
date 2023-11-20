@@ -29,6 +29,7 @@ publishActionNs.on("connection", (socket) => {
     
     devices[socket.id] = saved
     console.log("saved:log:" + devices)
+    console.log(devices[socket.id].toString() + ", " + devices[socket.id].deviceId + ", " + device[socket.id].deviceName)
     callback({success: true})
   })
 
