@@ -128,14 +128,14 @@ publishActionNs.on("connection", (socket) => {
   const leaveWithRoomName = (roomName) => {
     if(rooms[roomName]) {
       socket.leave(roomName)
-      const clientsInRoom = publishActionNs.adapter.rooms[rooms[roomName]]
-      
-      console.log(`leavewithRoomName:socketId:${socket.id}:clientsInRoom:${clientsInRoom}`)
-      if(clientsInRoom.length == 0) {
-        delete rooms[roomName]
-      } else {
-        socket.to(roomName).emit('message', {type: "USER_LEAVED_EVENT", deviceId: devices[socket.id].deviceId, deviceName: devices[socket.id].deviceName})
-      }
+      // const clientsInRoom = publishActionNs.adapter.rooms[rooms[roomName]]
+      console.log(publishActionNs.adapter.rooms)
+      // console.log(`leavewithRoomName:socketId:${socket.id}:clientsInRoom:${clientsInRoom}`)
+      // if(clientsInRoom.length == 0) {
+      //   delete rooms[roomName]
+      // } else {
+      //   socket.to(roomName).emit('message', {type: "USER_LEAVED_EVENT", deviceId: devices[socket.id].deviceId, deviceName: devices[socket.id].deviceName})
+      // }
     }
   }
 
