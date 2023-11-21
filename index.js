@@ -1,8 +1,6 @@
 import express from "express"
 import { Server } from "socket.io"
 import { createServer } from "http"
-import { v4 as uuidv4} from 'uuid'
-import { publicDecrypt } from "crypto"
 
 const app = express()
 
@@ -167,10 +165,6 @@ publishActionNs.on("connection", (socket) => {
 
 })
 
-const getDeviceByDeviceId = (deviceId) => {
-  return Object.values(devices).find(device => device.deviceId === deviceId)
-}
-
 io.on("connection", (socket) => {
   console.log("Connect socket: " + socket.id)
 })
@@ -178,3 +172,8 @@ const PORT = process.env.PORT || 3000
 httpServer.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`)
 })
+
+
+
+
+
